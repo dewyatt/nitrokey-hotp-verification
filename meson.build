@@ -36,7 +36,16 @@ version_cc = vcs_tag(
   fallback : 'v@0@'.format(meson.project_version()),
 )
 
-common_flags = ['-DNK_REMOVE_PTHREAD']
+common_flags = [
+'-DNK_REMOVE_PTHREAD',
+'-fdebug-prefix-map=$PWD=heads',
+'-gno-record-gcc-switches',
+'-DNDEBUG',
+'-fno-guess-branch-probability',
+'-Wdate-time',
+'-frandom-seed=0x42',
+'-O0',
+]
 
 incdir = ([
 include_directories('.'),
