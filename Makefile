@@ -43,7 +43,7 @@ CFLAGS= -Wall -Wextra -fno-guess-branch-probability -Wdate-time -frandom-seed=42
 
 OUTDIR=
 OUT=nitrokey-hotp-verification
-LDFLAGS=-lusb-1.0 -ludev
+LDFLAGS=-lusb-1.0
 
 all: $(OUT)
 	ls -lh $<
