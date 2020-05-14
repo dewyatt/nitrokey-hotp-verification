@@ -36,6 +36,7 @@ HIDAPIH=.
 INC:= \
 	-I$(SRCDIR) \
 	-Ihidapi/hidapi \
+	-Ihidapi \
 	-I$(HIDAPIH) \
 	-I/usr/include/libusb-1.0
 
