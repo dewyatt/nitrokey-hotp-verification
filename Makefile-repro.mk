@@ -14,14 +14,15 @@ repro-build-ubuntu:
 	sudo docker build -f Dockerfile.ubuntu . -t nhv-u
 
 # BUILDCMD=cmake -DUSE_SYSTEM_HIDAPI=OFF # failing (for tests)
-BUILDCMD=cmake -DCMAKE_C_FLAGS=-fdebug-prefix-map=$(PWD)=heads -gno-record-gcc-switches -DADD_GIT_INFO=OFF -DCMAKE_BUILD_TYPE=Release 
+BUILDCMD=cmake -DCMAKE_C_FLAGS=-fdebug-prefix-map=$(PWD)=heads -gno-record-gcc-switches -DADD_GIT_INFO=OFF -DCMAKE_BUILD_TYPE=Release ..
 BUILD1=$(BUILDCMD) -DUSE_SYSTEM_HIDAPI=ON
 BUILD2=$(BUILDCMD) -DUSE_SYSTEM_HIDAPI=OFF
 #USERNS=bash -c "echo 1 > /proc/sys/kernel/unprivileged_userns_clone" &&
 REPROTEST=env PYTHONIOENCODING=utf-8 reprotest --min-cpus 2
 BINARY=build/libremkey_hotp_verification
-CMD1=$(USERNS) $(REPROTEST) "cd build && $(BUILD1) .. && make clean && make"
-CMD2=$(USERNS) $(REPROTEST) "cd build && $(BUILD2) .. && make clean && make"
+BEXEC=make clean && make
+CMD1=$(USERNS) $(REPROTEST) "cd build && $(BUILD1) && $(BEXEC)"
+CMD2=$(USERNS) $(REPROTEST) "cd build && $(BUILD2) && $(BEXEC)"
 TEE=| tee -a log.txt
 repro-run:
 	mkdir -p build
