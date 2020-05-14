@@ -19,15 +19,17 @@ BUILD1=$(BUILDCMD) -DUSE_SYSTEM_HIDAPI=ON
 BUILD2=$(BUILDCMD) -DUSE_SYSTEM_HIDAPI=OFF
 #USERNS=bash -c "echo 1 > /proc/sys/kernel/unprivileged_userns_clone" &&
 REPROTEST=env PYTHONIOENCODING=utf-8 reprotest --min-cpus 2
-CMD1=$(USERNS) $(REPROTEST) "cd build && $(BUILD1) .. && make clean && make" build/libremkey_hotp_verification
-CMD2=$(USERNS) $(REPROTEST) "cd build && $(BUILD2) .. && make clean && make" build/libremkey_hotp_verification
+BINARY=build/libremkey_hotp_verification
+CMD1=$(USERNS) $(REPROTEST) "cd build && $(BUILD1) .. && make clean && make"
+CMD2=$(USERNS) $(REPROTEST) "cd build && $(BUILD2) .. && make clean && make"
 TEE=| tee -a log.txt
 repro-run:
 	mkdir -p build
+	rm -rf ./build/*
 	echo > log.txt
-	sudo docker run -it --privileged  -v $(PWD):/app nhv-u $(CMD1) $(TEE)
-	sudo docker run -it --privileged  -v $(PWD):/app nhv-u $(CMD2) $(TEE)
-	sudo docker run -it --privileged  -v $(PWD):/app nhv-f $(CMD1) $(TEE)
-	sudo docker run -it --privileged  -v $(PWD):/app nhv-f $(CMD2) $(TEE)
+	sudo docker run -it --privileged  -v $(PWD):/app nhv-u $(CMD1) $(BINARY) $(TEE)
+	sudo docker run -it --privileged  -v $(PWD):/app nhv-u $(CMD2) $(BINARY) $(TEE)
+	sudo docker run -it --privileged  -v $(PWD):/app nhv-f $(CMD1) $(BINARY) $(TEE)
+	sudo docker run -it --privileged  -v $(PWD):/app nhv-f $(CMD2) $(BINARY) $(TEE)
 	@echo finished with success
 	grep "./build/libremkey_hotp_verification"  log.txt | sort -u
