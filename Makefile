@@ -43,20 +43,26 @@ CFLAGS= -Wall -Wextra -fno-guess-branch-probability -Wdate-time -frandom-seed=42
 
 OUTDIR=
 OUT=nitrokey-hotp-verification
+OUT2=libremkey-hotp-verification
 LDFLAGS=-lusb-1.0
 
-all: $(OUT)
-	ls -lh $<
+all: $(OUT) $(OUT2)
+	ls -lh $^
 
 clean:
-	-rm $(OBJS) $(OUT)
+	-rm $(OBJS) $(OUT) version.c
+
+$(OUT2): $(OUT)
+	cp $< $@
 
 $(OUT): $(OBJS)
 	$(CC) $^ $(LDFLAGS)  -o $@
-	ls -lh $@
 
 %.o: %.c
 	$(CC) $(CFLAGS) $(INC) -o $@ $<
 
+$(SRCDIR)/version.c: $(SRCDIR)/version.c.in
+	#sed GIT_VERSION_PLACEHOLDER
+	cp $< $@
 
 .PRECIOUS: %.o
