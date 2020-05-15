@@ -72,3 +72,11 @@ $(SRCDIR)/version.c: $(SRCDIR)/version.c.in
 .PHONY: install
 install:
 	cp -v $(OUT) $(OUT2) $(INSTALL)/bin
+
+.PHONY: github_sha
+GVER=$(shell git rev-parse HEAD)
+libremkey_url := https://github.com/Nitrokey/nitrokey-hotp-verification/archive/$(GVER).tar.gz
+github_sha:
+	wget -c $(libremkey_url)
+	sha256sum $(GVER).tar.gz
+	@echo $(GVER)
