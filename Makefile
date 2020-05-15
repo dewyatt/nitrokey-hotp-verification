@@ -49,6 +49,7 @@ LDFLAGS=-lusb-1.0
 
 all: $(OUT) $(OUT2)
 	ls -lh $^
+	sha256sum $^
 
 clean:
 	-rm $(OBJS) $(OUT) version.c
@@ -67,3 +68,7 @@ $(SRCDIR)/version.c: $(SRCDIR)/version.c.in
 	cp $< $@
 
 .PRECIOUS: %.o
+
+.PHONY: install
+install:
+	cp -v $(OUT) $(OUT2) $(INSTALL)/bin
