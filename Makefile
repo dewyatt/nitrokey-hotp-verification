@@ -43,8 +43,8 @@ INC:= \
 CFLAGS= -Wall -Wextra -fno-guess-branch-probability -Wdate-time -frandom-seed=42 -O2 -gno-record-gcc-switches -DNDEBUG -fdebug-prefix-map=${PWD}=heads -c -std=gnu11 -DNK_REMOVE_PTHREAD
 
 OUTDIR=
-OUT=nitrokey-hotp-verification
-OUT2=libremkey-hotp-verification
+OUT=nitrokey_hotp_verification
+OUT2=libremkey_hotp_verification
 LDFLAGS=-lusb-1.0
 
 all: $(OUT) $(OUT2)
