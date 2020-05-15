@@ -1,4 +1,5 @@
 SRCDIR=.
+PKGCONFIG=pkg-config
 
 SRC:= \
 	$(SRCDIR)/crc32.c \
@@ -32,20 +33,21 @@ HEADERS := \
 
 OBJS := ${SRC:.c=.o}
 
-HIDAPIH=.
+HIDAPI_INC=hidapi
 INC:= \
 	-I$(SRCDIR) \
-	-Ihidapi/hidapi \
-	-Ihidapi \
-	-I$(HIDAPIH) \
-	-I/usr/include/libusb-1.0
+	-I$(HIDAPI_INC) \
+	-I$(HIDAPI_INC)/hidapi \
 
-CFLAGS= -Wall -Wextra -fno-guess-branch-probability -Wdate-time -frandom-seed=42 -O2 -gno-record-gcc-switches -DNDEBUG -fdebug-prefix-map=${PWD}=heads -c -std=gnu11 -DNK_REMOVE_PTHREAD
+LIBUSB_FLAGS=$(shell $(PKGCONFIG) --cflags libusb-1.0)
+LIBUSB_LIB=$(shell $(PKGCONFIG) --libs libusb-1.0)
+
+CFLAGS= -Wall -Wextra -fno-guess-branch-probability -Wdate-time -frandom-seed=42 -O2 -gno-record-gcc-switches -DNDEBUG -fdebug-prefix-map=${PWD}=heads -c -std=gnu11 -DNK_REMOVE_PTHREAD $(LIBUSB_FLAGS)
 
 OUTDIR=
 OUT=nitrokey_hotp_verification
 OUT2=libremkey_hotp_verification
-LDFLAGS=-lusb-1.0
+LDFLAGS=$(LIBUSB_LIB)
 
 all: $(OUT) $(OUT2)
 	ls -lh $^
@@ -63,12 +65,13 @@ $(OUT): $(OBJS)
 %.o: %.c
 	$(CC) $(CFLAGS) $(INC) -o $@ $<
 
+GITVERSION=$(shell git describe)
 $(SRCDIR)/version.c: $(SRCDIR)/version.c.in
-	#sed GIT_VERSION_PLACEHOLDER
-	cp $< $@
+	sed "s!@GIT_VERSION_PLACEHOLDER@!$(GITVERSION)!g" < $< >$@
 
 .PRECIOUS: %.o
 
+INSTALL=/usr/local/
 .PHONY: install
 install:
 	cp -v $(OUT) $(OUT2) $(INSTALL)/bin
